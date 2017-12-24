@@ -113,6 +113,7 @@
   <ItemGroup>
     <ClInclude Include="InitSocks.h" />
     <ClInclude Include="Socket.h" />
+    <ClInclude Include="ThreadSafePrinter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InitSocks.cpp" />

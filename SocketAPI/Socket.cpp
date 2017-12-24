@@ -101,7 +101,35 @@ int Socket::GetPort() const {
 }
 
 std::string Socket::GetIP() const {
-	
+	if (m_addrInfo.sin_addr.s_addr != INADDR_ANY) {
+		return GetIPHelper(m_addrInfo);
+	}
+	else {
+		addrinfo* localAddrInfo = nullptr;
+		addrinfo hints;
+
+		memset(&hints, 0, sizeof(addrinfo));
+
+		hints.ai_family = m_addrInfo.sin_family;
+		hints.ai_protocol = m_sockData.protocol;
+
+		char hoststr[NI_MAXHOST];
+		
+		gethostname(hoststr, sizeof(hoststr));
+		getaddrinfo(hoststr, 0, &hints, &localAddrInfo);
+
+		sockaddr_in temp = *(sockaddr_in*)localAddrInfo->ai_addr;
+		freeaddrinfo(localAddrInfo);
+
+		return GetIPHelper(temp);
+	}
+}
+
+std::string Socket::GetIPHelper(const sockaddr_in& addr) const {
+	char buffer[INET6_ADDRSTRLEN];
+	inet_ntop(addr.sin_family, &addr.sin_addr.s_addr, buffer, INET6_ADDRSTRLEN);
+
+	return buffer;
 }
 
 bool Socket::IsValid() const {

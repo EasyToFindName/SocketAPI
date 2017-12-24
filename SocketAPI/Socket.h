@@ -85,7 +85,9 @@ public:
 	// 0 if port isn't initialized
 	int GetPort() const;
 
-	//returns socket's host in numeric representation
+	// returns socket's host in numeric representation
+	// if ip is INADDR_ANY performs host lookup and
+	// returns address of first avaliable external interface
 	std::string GetIP() const;
 
 protected:
@@ -95,7 +97,7 @@ protected:
 
 	// transforms s_addr to string
 	// helper for GetIP function
-	std::string GetIPHelper(const sockaddr_in& addr);
+	std::string GetIPHelper(const sockaddr_in& addr) const;
 private: //members
 	SOCKET m_socket;
 	sockaddr_in m_addrInfo;
@@ -124,7 +126,7 @@ bool Socket::Send(const std::vector<T>& data, int flags) {
 
 template<typename T>
 Socket::RecvBuffer<T> Socket::Recv(int amount, int flags) {
-	std::unique_ptr<T[]> ptr{ new T[amount] };
+	std::unique_ptr<T[]> ptr{ new T[amount+1] };
 
 	int dataLen = sizeof(T) * amount;
 
